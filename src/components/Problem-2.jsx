@@ -1,6 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  useGetAllContactsQuery,
+  useGetUsContactsQuery,
+} from "../features/contacts/contactsApi";
 
 const Problem2 = () => {
+  const [allEven, setAllEven] = useState(false);
+  const [usEven, setUsEven] = useState(false);
+
+  const { data: allContact, isLoading } = useGetAllContactsQuery();
+  const { data: usContact, isLoading: isUsContactLoading } =
+    useGetUsContactsQuery();
+
+  let allFiltered;
+
+  if (allEven) {
+    allFiltered = allContact?.results.filter((contact) => contact.id % 2 === 0);
+  } else {
+    allFiltered = allContact?.results;
+  }
+
+  let usFiltered;
+
+  if (usEven) {
+    usFiltered = usContact?.results.filter((contact) => contact.id % 2 === 0);
+  } else {
+    usFiltered = usContact?.results;
+  }
   return (
     <div className="container">
       <div className="row justify-content-center mt-5">
@@ -27,55 +53,88 @@ const Problem2 = () => {
       </div>
       {/* all contact modal */}
       <div
-        class="modal fade"
+        className="modal fade modal-lg"
         id="allContactsModal"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="allContactsModalLabel"
         aria-hidden="true"
       >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="allContactsModalLabel">
+        <div className="modal-dialog modal-dialog-scrollable">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="allContactsModalLabel">
                 All Contacts
               </h1>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
               ></button>
             </div>
-            <div class="modal-body">
-              <p>Hello World</p>
-              <button
-                className="btn btn-lg btn-outline-warning"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#contactDetailsModal"
-              >
-                Contact 1
-              </button>
+            <div className="modal-body">
+              <table className="table table-striped text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allFiltered?.map((item) => (
+                    <tr key={item.id}>
+                      <th scope="row">{item.id}</th>
+                      <td>{item.phone}</td>
+                      <td>{item.country.name}</td>
+                      <td>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target="#contactDetailsModal"
+                        >
+                          Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary">
-                All Contacts
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#usContactsModal"
-              >
-                US Contacts
-              </button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
+            <div className="modal-footer d-flex justify-content-between">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="allEven"
+                  onClick={() => setAllEven(!allEven)}
+                />
+                <label className="form-check-label" htmlFor="allEven">
+                  Only Even
+                </label>
+              </div>
+              <div>
+                <button type="button" className="btn btn-primary">
+                  All Contacts
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary mx-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#usContactsModal"
+                >
+                  US Contacts
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -83,55 +142,88 @@ const Problem2 = () => {
 
       {/* us contacts modal */}
       <div
-        class="modal fade"
+        className="modal fade modal-lg"
         id="usContactsModal"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="usContactsModalLabel"
         aria-hidden="true"
       >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="usContactsModalLabel">
+        <div className="modal-dialog modal-dialog-scrollable">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="usContactsModalLabel">
                 US Contacts
               </h1>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
               ></button>
             </div>
-            <div class="modal-body">
-              <p>Hello World</p>
-              <button
-                className="btn btn-lg btn-outline-warning"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#contactDetailsModal"
-              >
-                Contact 1
-              </button>
+            <div className="modal-body">
+              <table className="table table-striped text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usFiltered?.map((item) => (
+                    <tr key={item.id}>
+                      <th scope="row">{item.id}</th>
+                      <td>{item.phone}</td>
+                      <td>{item.country?.name}</td>
+                      <td>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target="#contactDetailsModal"
+                        >
+                          Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#allContactsModal"
-              >
-                All Contacts
-              </button>
-              <button type="button" class="btn btn-primary">
-                US Contacts
-              </button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
+            <div className="modal-footer d-flex justify-content-between">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id="usEven"
+                  onClick={() => setUsEven(!usEven)}
+                />
+                <label className="form-check-label" htmlFor="usEven">
+                  Only Even
+                </label>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#allContactsModal"
+                >
+                  All Contacts
+                </button>
+                <button type="button" className="btn btn-primary mx-2">
+                  US Contacts
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -139,43 +231,43 @@ const Problem2 = () => {
 
       {/* contact details modal */}
       <div
-        class="modal fade"
+        className="modal fade"
         id="contactDetailsModal"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="contactDetailsModalLabel"
         aria-hidden="true"
       >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="contactDetailsModalLabel">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="contactDetailsModalLabel">
                 Contact Details
               </h1>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
               ></button>
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
               <h1>Contact Detail Here</h1>
             </div>
-            <div class="modal-footer">
+            <div className="modal-footer">
               {/* <button
                 type="button"
-                class="btn btn-primary"
+                className="btn btn-primary"
                 data-bs-toggle="modal"
                 data-bs-target="#allContactsModal"
               >
                 All Contacts
               </button>
-              <button type="button" class="btn btn-primary">
+              <button type="button" className="btn btn-primary">
                 US Contacts
               </button> */}
               <button
                 type="button"
-                class="btn btn-secondary"
+                className="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
                 Close
